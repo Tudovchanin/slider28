@@ -21,14 +21,14 @@ class Slider {
 		this.flagDragDropTouch = false; // Флаг dragDrop для touch устройств
 		this.flagSliderCount = false;  // Флаг для подсчета шагов слайдера
 		this.flagSliderNumberStep = false; //Флаг отображения общего количества шагов и текущего шага
-
 		
+
 		this.windowWidth = document.documentElement.clientWidth;  // Ширина окна
 
 		this.elemItem = item;  // Один элемент слайдера
 		this.elemBtnNext = btnNext;  // Кнопка для перехода к следующему слайду
 		this.elemBtnPrev = btnPrev;  // Кнопка для перехода к предыдущему слайду
-		this.elemContainerSlider = containerSlider;  // Контейнер слайдера
+		// this.elemContainerSlider = containerSlider;  // Контейнер слайдера
 		this.elemSlider = slider;  // Сам слайдер
 		this.elemTotalStep = null // элемент для отображения общего кол-ва шагов 
 		this.elemStepSlide = null //// элемент для отображения текущего шага
@@ -39,7 +39,7 @@ class Slider {
 		this.visibleSlides = this.getVisibleSlidesMediaQueries(this.mediaQueries);  // Количество видимых слайдов
 		this.distance = this.updateWidthItem();  // Ширина одного элемента слайдера
 		this.totalSteps = null; // 
-	
+
 		this.onResize = this.handleResize.bind(this); // обработчик события resize
 		this.onDOMLoaded = this.handleDOMLoaded.bind(this); // обработчик события DOMContentLoaded
 
@@ -63,17 +63,40 @@ class Slider {
 		}
 	}
 
+
+
+	dispatchSlideChangeEvent() {
+    // Создаем новое пользовательское событие 'slideChanged'
+    const event = new CustomEvent('slideChanged', {
+        // Передаем дополнительные данные в свойстве detail
+        detail: {
+            currentStep: this.stepNumber, // Текущий шаг слайдера
+            totalSteps: this.totalSteps,   // Общее количество шагов в слайдере
+        },
+    });
+
+    // Отправляем (диспатчим) событие на элемент слайдера
+    this.elemSlider.dispatchEvent(event); // Отправка события
+}
+
+
+
 	// Метод инициализации подсчета шагов
 	initCount($totalStep = null, $stepSlide = null) {
 
 		this.flagSliderCount = true;  //  включение флага подсчета шагов
 
 		if (!$totalStep || !$stepSlide) return;
+
 		this.elemTotalStep = $totalStep;  // Элемент для отображения общего количества шагов
 		this.elemStepSlide = $stepSlide;  // Элемент для отображения текущего шага
+		this.elemStepSlide.textContent = this.stepNumber;
 		this.flagSliderNumberStep = true;
 	}
 
+	initStepCallback(callBack) {
+		this.callBack = callBack;
+	}
 
 
 	// Удаление событий
@@ -111,14 +134,17 @@ class Slider {
 		this.updateButtonStates();
 		if (this.flagSliderCount) {
 			this.showSlideStep();
+			this.dispatchSlideChangeEvent(); 
 		}
 	}
 
 	handleClickPrev() {
 		this.movePrev();
 		this.updateButtonStates();
+
 		if (this.flagSliderCount) {
 			this.showSlideStep();
+			this.dispatchSlideChangeEvent(); 
 		}
 	}
 
@@ -147,9 +173,6 @@ class Slider {
 		}
 		this.updateButtonStates();
 	}
-
-
-
 
 	initDragDrop(desktop = false) {
 		this.flagDragDropTouch = true;
@@ -190,17 +213,21 @@ class Slider {
 		const clientX = e.touches ? e.touches[0].clientX : e.clientX;
 
 		this.startDragDrop(clientX);
+		
 	}
+
 	handleMove(e) {
 		if (!this.isDragging) return;
-		e.preventDefault();
+		// e.preventDefault();
 		const clientX = e.touches ? e.touches[0].clientX : e.clientX;
 		this.moveDragDrop(clientX);
 	}
+
 	handleEnd(e) {
 		if (!this.isDragging) return;
-		e.preventDefault();
+		// e.preventDefault();
 		this.endDragDrop();
+		
 	}
 
 	// Метод начала перетаскивания
@@ -254,6 +281,7 @@ class Slider {
 				this.animateSlider(this.elemSlider, this.position);
 			}
 			this.updateButtonStates();
+			this.dispatchSlideChangeEvent(); 
 		}, 100);
 	}
 
@@ -267,7 +295,7 @@ class Slider {
 		if (this.elemBtnNext) {
 			this.elemBtnNext.disabled = this.position <= this.sliderEnd();
 		}
-		if (this.btnPrev) {
+		if (this.elemBtnPrev) {
 			this.elemBtnPrev.disabled = this.position >= 0;
 		}
 	}
@@ -292,12 +320,14 @@ class Slider {
 		this.stepNumber = valueStep;
 
 		if (!this.flagSliderNumberStep) return;
-		if (valueStep >= this.elemTotalStep.textContent) {
+		this.callBack(valueStep)
+
+		if (valueStep >= +this.elemTotalStep.textContent) {
 			this.elemStepSlide.textContent = this.elemTotalStep.textContent;
 			return;
 		}
-		this.elemStepSlide.textContent = valueStep;
 
+		this.elemStepSlide.textContent = valueStep;
 	}
 
 	// Метод получения количества видимых слайдов по медиа-запросам
@@ -318,13 +348,16 @@ class Slider {
 	moveNext() {
 		const valueEnd = this.visibleSlides * this.distance - this.distance * this.sliderLength;
 		if (this.position <= valueEnd) return;
+	
 		this.position = this.position - this.distance;
 		this.animateSlider(this.elemSlider, this.position);
 	}
 
 	// Метод перехода к предыдущему слайду
 	movePrev() {
+		
 		if (this.position === 0) return;
+	
 		this.position = this.position + this.distance;
 		this.animateSlider(this.elemSlider, this.position);
 	}
@@ -342,15 +375,10 @@ class Slider {
 		if (this.flagSliderNumberStep) {
 			this.elemStepSlide.textContent = 1;
 		}
-	
+
 		this.animateSlider(this.elemSlider, this.position);
 	}
 }
-
-// --------------------------
-
-
-
 
 
 
@@ -371,15 +399,15 @@ const media = {
 const totalStep = document.querySelectorAll('.total-steps');
 const stepSlide = document.querySelectorAll('.step-slide');
 
-// Иконки шагов
-const allIconsCount = document.querySelectorAll('.radio');
+
+
 
 document.querySelectorAll('.container-slider').forEach((elem, index) => {
 	// Объект с элементами слайдера, если кнопки ненужны не указываем их в объекте
 	const $sliderAllElem = {
 		btnNext: document.querySelectorAll('.btn-next-slide')[index],
 		btnPrev: document.querySelectorAll('.btn-prev-slide')[index], //КНОПКИ ЕСЛИ НЕ НУЖНЫ ТО ПРОСТО НЕ ПЕРЕДАЕМ
-		containerSlider: elem,
+		// containerSlider: elem,
 		slider: elem.querySelector('.slider'),
 		itemLength: elem.querySelectorAll('.item').length,
 		item: elem.querySelector('.item'),
@@ -395,12 +423,19 @@ document.querySelectorAll('.container-slider').forEach((elem, index) => {
 	// sliderObj.initIconCount(allIconsCount, 'radio-active');
 
 	sliderObj.initDragDrop('desktop');//инициализация drag'n drop не обязательна, если для desktop ненужно, то вызываем метод без аргумента
+sliderObj.initStepCallback(showStepIcon);
 
-
-	console.log(sliderObj.setCountTotalStep(), sliderObj.showSlideStep());
-
-
+// Подписка на событие
+sliderObj.elemSlider.addEventListener('slideChanged', (e) => {
+	console.log(`Событие: текущий шаг ${e.detail.currentStep}, всего шагов ${e.detail.totalSteps}`);
+});
 
 
 })
 
+// калбек для отслеживания шагов
+function showStepIcon(step) {
+	const iconsStep = document.querySelectorAll('.radio');
+	iconsStep.forEach(el => el.classList.remove('radio-active'));
+	iconsStep[step-1].classList.add('radio-active')
+}
