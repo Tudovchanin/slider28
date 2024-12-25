@@ -156,6 +156,10 @@ body {
 	box-shadow: 0 0 15px rgba(165, 42, 42, 1);
 }
 
+.btn-next-slide:disabled,
+.btn-prev-slide:disabled {
+opacity: .5;
+}
 
 .title-planet {
 	font-size: 40px;
