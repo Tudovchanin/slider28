@@ -3,12 +3,41 @@
 	margin: 0;
 	box-sizing: border-box;
 }
+
+img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+
+}
+
+
+video {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+h1 {
+	text-align: center;
+	padding: 50px;
+	font-size: 60px;
+	font-weight: 900;
+	color: rgb(229, 217, 157);
+}
+
 body {
-	height: 3000px;
+	min-height: 100vh;
+	background-image: url('./images/kosmos.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
 }
 
 .slider-section {
-	max-width: 1000px;
+	display: grid;
+	justify-content: center;
+	gap: 100px;
+	padding: 100px 20px;
 }
 
 
@@ -20,65 +49,157 @@ body {
 /*обязательные св-ва */
 .container-slider {
 	overflow: hidden;
+	max-width: 1200px;
 }
+
 /* обязательные св-ва. Анимацию можем поменять */
 .slider {
 	display: flex;
 	transform: translateX(0px);
-	cursor: pointer;
 	touch-action: none;
-	transition: transform .4s linear; 
+	transition: transform .4s linear;
 }
-/* обязательные св-ва */
+
+/* обязательные св-ва, без border, размер контента регулируем с помощью дочерних элементов */
 .item {
 	flex-shrink: 0;
 	flex-grow: 0;
+	display: flex;
+	/* для выравнивания вложенных элементов по центру item */
+	flex-direction: column;
+	/* для выравнивания если вложенных элементов будет больше одного */
+	align-items: center;
+	justify-content: center;
+	gap: 40px;
 	width: 20%;
-	/* touch-action: none; */
+	/* необязательные свойства*/
+	padding: 20px;
+	/* необязательные свойства, для создания отступов между слайдами . С margin слайдер не работает, регулируем только внутренний контент*/
+
 }
 
-.radio-active{
-background-color: brown;
+.container-icons-steps {
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+	padding: 20px;
 }
-.content{
-	margin: 1rem;
-	background-color: aquamarine;
+
+.icon-step {
+	max-width: 40px;
+	width: 100%;
+	height: 10px;
+	background: linear-gradient(to right, rgb(0, 0, 255), lightblue);
+	transition: box-shadow 0.3s ease;
+	box-shadow: 0 0 10px rgba(0, 0, 255, 0.5);
+	border-radius: 10px;
+}
+
+.icon-active {
+	background: linear-gradient(to right, rgb(250, 246, 246), rgb(229, 217, 157));
+	box-shadow: 0 0 10px rgba(208, 207, 225, 0.7), 0 0 20px rgba(142, 231, 216, 0.5); 
+	border: solid 1px rgba(0, 217, 255, 0.486);
+}
+
+
+.container-number-steps {
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+	padding: 10px;
+	font-size: 40px;
+	font-weight: 700;
+	color: rgb(232, 85, 17);
+}
+
+.container-number-steps div{
+	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+	
+}
+
+.container-btn {
+	display: flex;
+	justify-content: center;
+	gap: 20px;
+	padding: 10px;
 }
 
 
 
-.radio-5,
-.radio-6,
-.radio-7,
-.radio-8 {
-	display: none;
+.btn-prev-slide, .btn-next-slide {
+	padding: 10px 20px; 
+	border: none; 
+	font-size: 16px; 
+	color: rgb(255, 255, 255); 
+	cursor: pointer; 
+	transition: background 0.3s ease, box-shadow 0.3s ease; 
 }
+
+.btn-prev-slide {
+	background: linear-gradient(to right, rgb(0, 0, 255), lightblue); 
+	box-shadow: 0 0 10px rgba(0, 0, 255, 0.5);
+}
+
+.btn-next-slide {
+	background: linear-gradient(to right, rgb(165, 42, 42), rgb(105, 22, 22));
+	box-shadow: 0 0 10px rgba(165, 42, 42, 0.7);
+}
+
+/* Эффект при наведении */
+.btn-prev-slide:hover {
+	background: linear-gradient(to right, lightblue, rgb(0, 0, 255));
+	box-shadow: 0 0 15px rgba(0, 0, 255, 0.7);
+}
+
+.btn-next-slide:hover {
+	background: linear-gradient(to right, rgb(105, 22, 22), rgb(165, 42, 42));
+	box-shadow: 0 0 15px rgba(165, 42, 42, 1);
+}
+
+
+.title-planet {
+	font-size: 40px;
+	color: bisque;
+}
+
+/* размеры задаем через max-width*/
+.content {
+	max-width: 200px;
+	height: 300px;
+	outline: solid rgb(245, 222, 179);
+	background-color: rgb(0, 0, 0);
+	cursor: grab;
+	position: relative;
+	box-shadow: 0 0 16px 4px rgb(254, 254, 254)
+}
+
+.content:active {
+	cursor: grabbing;
+}
+
+
 
 
 @media(max-width:1024px) {
-	.item{
+	.item {
 		width: 33.33333%;
 	}
-	.radio-5,
-	.radio-6 {
-	display: initial;
-	}
+
 }
 
 @media(max-width: 767px) {
-	.item{
+	.item {
 		width: 50%;
 	}
-	.radio-7 {
-		display: initial;
-		}
 }
 
 @media(max-width: 500px) {
-	.item{
+	.item {
 		width: 100%;
 	}
-	.radio-8 {
-		display: initial;
-		}
-} 
+
+	.content {
+		max-width: 100%;
+	}
+
+}
