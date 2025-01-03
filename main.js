@@ -425,5 +425,3 @@ document.querySelectorAll('.container-slider').forEach((elem, index) => {
 		$totalSteps.textContent = totalSteps;
 	}
 });
-
-
