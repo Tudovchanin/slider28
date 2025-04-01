@@ -2,7 +2,6 @@
 
 
 
-
 class Slider {
 	// Конструктор класса Slider, принимает объект mediaQueries
 	constructor(mediaQueries) {
@@ -93,17 +92,17 @@ class Slider {
 		if (this.flagDragDropMouse) {
 
 			// Обработчики событий для мыши
-			this.elemSlider.removeEventListener('mousedown', this.onmousedown, { passive: false });
+			this.elemSlider.removeEventListener('mousedown', this.onmousedown);
 
-			this.elemSlider.removeEventListener('mousemove', this.onmousemove, { passive: false });
+			this.elemSlider.removeEventListener('mousemove', this.onmousemove);
 
 			document.removeEventListener('mouseup', this.onmouseup);
 		}
 
 		if (this.flagDragDropTouch) {
 
-			this.elemSlider.removeEventListener('touchstart', this.ontouchstart, { passive: false });
-			this.elemSlider.removeEventListener('touchmove', this.ontouchmove, { passive: false });
+			this.elemSlider.removeEventListener('touchstart', this.ontouchstart);
+			this.elemSlider.removeEventListener('touchmove', this.ontouchmove);
 			document.removeEventListener('touchend', this.ontouchend);
 
 		}
