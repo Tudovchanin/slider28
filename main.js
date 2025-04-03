@@ -72,8 +72,8 @@ class Slider {
 	initStepsCallback(callBack) {
 		this.callBackSteps = callBack;
 	}
-	
-	initResizeCallback (callback) {
+
+	initResizeCallback(callback) {
 		this.callBackResize = callback;
 	}
 
@@ -131,15 +131,21 @@ class Slider {
 		this.setTotalSteps();
 		this.windowWidth = newWindowWidth;
 		this.dispatchSlideChangeEvent();
-		this.callBackSteps(this.stepNumber, this.totalSteps);
-		this.callBackResize();
+		if (this.callBackResize) {
+			this.callBackResize();
+		}
+		if (this.callBackSteps) {
+			this.callBackSteps(this.stepNumber, this.totalSteps);
+		}
 	}
 
 	handleDOMLoaded() {
 		this.updateButtonStates();
 		this.setTotalSteps();
 		this.dispatchSlideChangeEvent();
-		this.callBackSteps(this.stepNumber, this.totalSteps);
+		if (this.callBackSteps) {
+			this.callBackSteps(this.stepNumber, this.totalSteps);
+		}
 	}
 
 
@@ -270,7 +276,9 @@ class Slider {
 		const valueStep = Math.abs(this.position / this.distance) + 1;
 		this.stepNumber = valueStep;
 
-		this.callBackSteps(this.stepNumber, this.totalSteps);
+		if(this.callBackSteps) {
+			this.callBackSteps(this.stepNumber, this.totalSteps);
+		}
 		this.dispatchSlideChangeEvent();
 	}
 
@@ -351,8 +359,6 @@ const media = {
 document.querySelectorAll('.container-slider').forEach((elem, index) => {
 	// Объект с элементами слайдера, если кнопки ненужны не указываем их в объекте
 	const $sliderAllElem = {
-		btnNext: document.querySelectorAll('.btn-next-slide')[index],
-		btnPrev: document.querySelectorAll('.btn-prev-slide')[index],
 		slider: elem.querySelector('.slider'),
 		itemLength: elem.querySelectorAll('.item').length,
 		item: elem.querySelector('.item'),
@@ -366,32 +372,32 @@ document.querySelectorAll('.container-slider').forEach((elem, index) => {
 	const sliderObj = new Slider(media);
 	sliderObj.initSlider($sliderAllElem);//инициализация слайдера
 	sliderObj.initDragDrop('desktop');//инициализация drag'n drop не обязательна, если для desktop ненужно, то вызываем метод без аргумента
-	sliderObj.initStepsCallback(callbackSteps);
-	sliderObj.initResizeCallback(callbackResizeWidth);
-	
+	// sliderObj.initStepsCallback(callbackSteps);
+	// sliderObj.initResizeCallback(callbackResizeWidth);
 
-	
+
+
 	if ($containerIconsSteps && sliderObj.totalSteps) {
 		$containerIconsSteps.append(initIconSteps(sliderObj.totalSteps, 'icon-step'))
 	}
 
 	// если нужно слайдер создает событие при изменение 
-	
+
 	elem.addEventListener('slideChanged', (e) => {
 		console.log(`Событие: текущий шаг ${e.detail.currentStep}, всего шагов ${e.detail.totalSteps}`);
 	});
 
 	// callback вызывается при изменении размеров экрана
 	function callbackResizeWidth() {
-		
-		if($containerIconsSteps && $containerIconsSteps.childNodes.length > 0) {
+
+		if ($containerIconsSteps && $containerIconsSteps.childNodes.length > 0) {
 			$containerIconsSteps.replaceChildren();
 			$containerIconsSteps.append(initIconSteps(sliderObj.totalSteps, 'icon-step'));
 			showStepIcon(1);
 		}
-		
-		
-		
+
+
+
 	}
 	// callback вызывается при изменении размеров экрана и при изменение позиции слайдера
 	function callbackSteps(step, totalSteps) {
@@ -414,7 +420,7 @@ document.querySelectorAll('.container-slider').forEach((elem, index) => {
 	// переключение active  иконки шагов
 	function showStepIcon(step) {
 		const $allIconsSteps = $containerIconsSteps.querySelectorAll('.icon-step')
-	
+
 		$allIconsSteps.forEach(el => el.classList.remove('icon-active'));
 		$allIconsSteps[step - 1].classList.add('icon-active')
 	}
