@@ -359,6 +359,9 @@ const media = {
 document.querySelectorAll('.container-slider').forEach((elem, index) => {
 	// Объект с элементами слайдера, если кнопки ненужны не указываем их в объекте
 	const $sliderAllElem = {
+		btnNext:elem.querySelector('.btn-next-slide'),
+		btnPrev:elem.querySelector('.btn-prev-slide'),
+
 		slider: elem.querySelector('.slider'),
 		itemLength: elem.querySelectorAll('.item').length,
 		item: elem.querySelector('.item'),
@@ -372,8 +375,10 @@ document.querySelectorAll('.container-slider').forEach((elem, index) => {
 	const sliderObj = new Slider(media);
 	sliderObj.initSlider($sliderAllElem);//инициализация слайдера
 	sliderObj.initDragDrop('desktop');//инициализация drag'n drop не обязательна, если для desktop ненужно, то вызываем метод без аргумента
-	// sliderObj.initStepsCallback(callbackSteps);
-	// sliderObj.initResizeCallback(callbackResizeWidth);
+
+	// не обязательные callback
+	sliderObj.initStepsCallback(callbackSteps);
+	sliderObj.initResizeCallback(callbackResizeWidth); 
 
 
 
